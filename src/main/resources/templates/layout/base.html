@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${title} ?: 'Product Security App'">Product Security App</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.5);
+
+      --bg-primary: #0f0f23;
+      --bg-secondary: #1a1a2e;
+      --bg-accent: #16213e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+              radial-gradient(ellipse at top left, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at top right, rgba(249, 87, 108, 0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at bottom left, rgba(67, 233, 123, 0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at bottom right, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+      z-index: -1;
+      animation: backgroundShift 20s ease-in-out infinite;
+    }
+
+    @keyframes backgroundShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Glass Navigation */
+    .glass-nav {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .glass-nav:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none !important;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .nav-link {
+      color: var(--text-secondary) !important;
+      font-weight: 500;
+      position: relative;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem !important;
+      border-radius: 8px;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary) !important;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--primary-gradient);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .nav-link:hover::after {
+      width: 80%;
+    }
+
+    /* Modern Container */
+    .modern-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--glass-shadow);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(31, 38, 135, 0.5);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-card:hover::before {
+      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent);
+    }
+
+    /* Modern Buttons */
+    .btn-modern {
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .btn-modern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-modern:hover::before {
+      left: 100%;
+    }
+
+    .btn-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary-modern {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .btn-success-modern {
+      background: var(--success-gradient);
+      color: white;
+    }
+
+    .btn-warning-modern {
+      background: var(--warning-gradient);
+      color: white;
+    }
+
+    .btn-danger-modern {
+      background: var(--danger-gradient);
+      color: white;
+    }
+
+    .btn-secondary-modern {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Modern Form Elements */
+    .form-modern {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label-modern {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+
+    .form-input-modern {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-input-modern:focus {
+      outline: none;
+      border-color: rgba(102, 126, 234, 0.8);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .form-input-modern::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Modern Table */
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.5rem;
+    }
+
+    .table-modern thead th {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      font-weight: 600;
+      padding: 1rem;
+      border: none;
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+    }
+
+    .table-modern tbody tr {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .table-modern tbody tr:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    .table-modern tbody td {
+      padding: 1rem;
+      border: none;
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    .table-modern tbody tr td:first-child {
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+
+    .table-modern tbody tr td:last-child {
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    /* Alert Messages */
+    .alert-modern {
+      border: none;
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      backdrop-filter: blur(20px);
+      animation: slideInDown 0.5s ease;
+    }
+
+    .alert-success-modern {
+      background: linear-gradient(135deg, rgba(67, 233, 123, 0.2), rgba(56, 249, 215, 0.2));
+      border: 1px solid rgba(67, 233, 123, 0.3);
+      color: #43e97b;
+    }
+
+    .alert-danger-modern {
+      background: linear-gradient(135deg, rgba(250, 112, 154, 0.2), rgba(254, 225, 64, 0.2));
+      border: 1px solid rgba(250, 112, 154, 0.3);
+      color: #fa709a;
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Page Title */
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+      text-align: center;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Loading Animation */
+    .loading-dots {
+      display: inline-block;
+    }
+
+    .loading-dots::after {
+      content: '';
+      animation: dots 2s infinite;
+    }
+
+    @keyframes dots {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+      100% { content: ''; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .modern-container {
+        padding: 1rem;
+      }
+
+      .glass-card {
+        padding: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 2rem;
+      }
+    }
+
+    /* Badge */
+    .badge-modern {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-admin {
+      background: var(--danger-gradient);
+      color: white;
+    }
+
+    .badge-user {
+      background: var(--success-gradient);
+      color: white;
+    }
+
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      z-index: 1000;
+    }
+
+    .fab:hover {
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+    }
+  </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="glass-nav">
+  <div class="modern-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+      <a href="/" class="navbar-brand">
+        <i class="fas fa-cube"></i> ProductSync
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">
+                            환영합니다, <strong sec:authentication="name" style="color: var(--text-primary);"></strong>님
+                        </span>
+          <a class="nav-link" href="/products">
+            <i class="fas fa-list"></i> 상품 목록
+          </a>
+          <a class="nav-link" href="/products/new" sec:authorize="hasRole('ADMIN')">
+            <i class="fas fa-plus"></i> 상품 등록
+          </a>
+          <a class="nav-link" href="/admin" sec:authorize="hasRole('ADMIN')">
+            <i class="fas fa-crown"></i> 관리자
+          </a>
+          <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="btn-modern btn-secondary-modern">
+              <i class="fas fa-sign-out-alt"></i> 로그아웃
+            </button>
+          </form>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()" style="display: flex; align-items: center; gap: 1rem;">
+          <a class="nav-link" href="/login">
+            <i class="fas fa-sign-in-alt"></i> 로그인
+          </a>
+          <a class="nav-link" href="/register">
+            <i class="fas fa-user-plus"></i> 회원가입
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="modern-container">
+  <!-- Flash Messages -->
+  <div th:if="${message}" class="alert-modern alert-success-modern">
+    <i class="fas fa-check-circle"></i>
+    <span th:text="${message}"></span>
+  </div>
+
+  <div th:if="${error}" class="alert-modern alert-danger-modern">
+    <i class="fas fa-exclamation-circle"></i>
+    <span th:text="${error}"></span>
+  </div>
+
+  <!-- Page Content -->
+  <main th:replace="${content}">
+    <!-- 페이지 콘텐츠가 여기에 들어갑니다 -->
+  </main>
+</div>
+
+<!-- Floating Action Button (for mobile) -->
+<button class="fab" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+  // Smooth scroll for all links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
+    });
+  });
+
+  // Auto-hide alerts after 5 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.alert-modern').forEach(alert => {
+      alert.style.animation = 'slideInDown 0.5s ease reverse';
+      setTimeout(() => alert.remove(), 500);
+    });
+  }, 5000);
+
+  // Add loading state to buttons
+  document.querySelectorAll('.btn-modern').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (this.type === 'submit') {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리중<span class="loading-dots"></span>';
+        this.disabled = true;
+      }
+    });
+  });
+</script>
+</body>
+</html>

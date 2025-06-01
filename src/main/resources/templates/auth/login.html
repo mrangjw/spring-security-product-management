@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProductSync - 로그인</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+
+            --bg-primary: #0f0f23;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(ellipse at top left, rgba(102, 126, 234, 0.15) 0%, transparent 70%),
+                    radial-gradient(ellipse at top right, rgba(249, 87, 108, 0.15) 0%, transparent 70%),
+                    radial-gradient(ellipse at bottom left, rgba(67, 233, 123, 0.15) 0%, transparent 70%),
+                    radial-gradient(ellipse at bottom right, rgba(118, 75, 162, 0.15) 0%, transparent 70%);
+            z-index: -2;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        /* Floating Particles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+                    radial-gradient(2px 2px at 40px 70px, rgba(102, 126, 234, 0.4), transparent),
+                    radial-gradient(1px 1px at 90px 40px, rgba(249, 87, 108, 0.4), transparent),
+                    radial-gradient(1px 1px at 130px 80px, rgba(67, 233, 123, 0.4), transparent),
+                    radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            z-index: -1;
+            animation: particleFloat 40s linear infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-2000px) rotate(360deg); }
+        }
+
+        /* Main Container */
+        .main-container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        /* Left Side - Branding */
+        .brand-section {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .brand-content {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            animation: slideInLeft 1s ease;
+        }
+
+        .main-logo {
+            width: 120px;
+            height: 120px;
+            background: var(--primary-gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .brand-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .brand-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+        }
+
+        /* Right Side - Login Form */
+        .login-section {
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .login-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--glass-shadow);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            animation: slideInRight 1s ease;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            opacity: 0.8;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .form-group:focus-within .input-icon {
+            color: #667eea;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Button */
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 16px;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: none;
+            animation: alertSlide 0.5s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.2), rgba(56, 249, 215, 0.2));
+            border: 1px solid rgba(67, 233, 123, 0.4);
+            color: #43e97b;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.2), rgba(254, 225, 64, 0.2));
+            border: 1px solid rgba(250, 112, 154, 0.4);
+            color: #fa709a;
+        }
+
+        @keyframes alertSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Links */
+        .auth-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .auth-link a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: #667eea;
+        }
+
+        .auth-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .auth-link a:hover::after {
+            width: 100%;
+        }
+
+        /* Divider */
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .divider span {
+            background: var(--glass-bg);
+            padding: 0 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .brand-section {
+                height: auto;
+                padding: 2rem;
+                min-height: 40vh;
+            }
+
+            .login-section {
+                height: auto;
+                padding: 2rem;
+                min-height: 60vh;
+            }
+
+            .brand-title {
+                font-size: 2rem;
+            }
+
+            .main-logo {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .brand-section, .login-section {
+                padding: 1.5rem;
+            }
+
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .feature-list {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <!-- Left Side - Branding -->
+    <div class="brand-section">
+        <div class="brand-content">
+            <div class="main-logo">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h1 class="brand-title">ProductSync</h1>
+            <p class="brand-subtitle">
+                혁신적인 상품 관리 시스템으로<br>
+                비즈니스를 한 단계 업그레이드하세요
+            </p>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>Spring Security 기반 보안</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span>권한 기반 접근 제어</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <span>실시간 데이터 동기화</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span>고급 분석 대시보드</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side - Login Form -->
+    <div class="login-section">
+        <div class="login-container">
+            <div class="login-header">
+                <h2 class="login-title">로그인</h2>
+                <p class="login-subtitle">계정에 로그인하여 시작하세요</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${message}"></span>
+            </div>
+
+            <!-- Login Form -->
+            <form th:action="@{/login}" method="post" id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">이메일 주소</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email"
+                               class="form-input"
+                               id="username"
+                               name="username"
+                               placeholder="example@email.com"
+                               required
+                               autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password"
+                               class="form-input"
+                               id="password"
+                               name="password"
+                               placeholder="비밀번호를 입력하세요"
+                               required
+                               autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="btn-text">로그인</span>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>또는</span>
+            </div>
+
+            <!-- Register Link -->
+            <div class="auth-link">
+                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">아직 계정이 없으신가요?</p>
+                <a th:href="@{/register}">
+                    <i class="fas fa-user-plus"></i>
+                    새 계정 만들기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const btn = document.getElementById('loginBtn');
+        const btnText = btn.querySelector('.btn-text');
+
+        btnText.innerHTML = '<span class="loading"></span> 로그인 중...';
+        btn.disabled = true;
+
+        // Re-enable after 3 seconds in case of error
+        setTimeout(() => {
+            btnText.innerHTML = '로그인';
+            btn.disabled = false;
+        }, 3000);
+    });
+
+    // Enhanced form validation
+    const inputs = document.querySelectorAll('.form-input');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.validity.valid) {
+                this.style.borderColor = 'rgba(67, 233, 123, 0.6)';
+            } else {
+                this.style.borderColor = 'rgba(250, 112, 154, 0.6)';
+            }
+        });
+
+        input.addEventListener('input', function() {
+            this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        });
+    });
+
+    // Auto-hide alerts
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            alert.style.animation = 'alertSlide 0.5s ease reverse';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 500);
+        });
+    }, 5000);
+
+    // Keyboard navigation enhancement
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+            const form = document.getElementById('loginForm');
+            const firstEmptyInput = Array.from(form.querySelectorAll('input')).find(input => !input.value);
+
+            if (firstEmptyInput) {
+                firstEmptyInput.focus();
+            } else {
+                form.submit();
+            }
+        }
+    });
+</script>
+</body>
+</html>

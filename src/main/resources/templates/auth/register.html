@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProductSync - 회원가입</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+
+            --bg-primary: #0f0f23;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(ellipse at top left, rgba(102, 126, 234, 0.15) 0%, transparent 70%),
+                    radial-gradient(ellipse at top right, rgba(249, 87, 108, 0.15) 0%, transparent 70%),
+                    radial-gradient(ellipse at bottom left, rgba(67, 233, 123, 0.15) 0%, transparent 70%),
+                    radial-gradient(ellipse at bottom right, rgba(118, 75, 162, 0.15) 0%, transparent 70%);
+            z-index: -2;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        /* Floating Particles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+                    radial-gradient(2px 2px at 40px 70px, rgba(102, 126, 234, 0.4), transparent),
+                    radial-gradient(1px 1px at 90px 40px, rgba(249, 87, 108, 0.4), transparent),
+                    radial-gradient(1px 1px at 130px 80px, rgba(67, 233, 123, 0.4), transparent),
+                    radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            z-index: -1;
+            animation: particleFloat 40s linear infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-2000px) rotate(360deg); }
+        }
+
+        /* Main Container */
+        .main-container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        /* Left Side - Branding */
+        .brand-section {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .brand-content {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            animation: slideInLeft 1s ease;
+        }
+
+        .main-logo {
+            width: 120px;
+            height: 120px;
+            background: var(--success-gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 20px 60px rgba(79, 172, 254, 0.4);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .brand-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .brand-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .benefit-list {
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(79, 172, 254, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4facfe;
+        }
+
+        /* Right Side - Register Form */
+        .register-section {
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .register-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--glass-shadow);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            animation: slideInRight 1s ease;
+            overflow: hidden;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--success-gradient);
+            opacity: 0.8;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .register-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(79, 172, 254, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 25px rgba(79, 172, 254, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .form-group:focus-within .input-icon {
+            color: #4facfe;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Button */
+        .btn-register {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 16px;
+            background: var(--success-gradient);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .btn-register:hover::before {
+            left: 100%;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.5);
+        }
+
+        .btn-register:active {
+            transform: translateY(-1px);
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: none;
+            animation: alertSlide 0.5s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.2), rgba(56, 249, 215, 0.2));
+            border: 1px solid rgba(67, 233, 123, 0.4);
+            color: #43e97b;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.2), rgba(254, 225, 64, 0.2));
+            border: 1px solid rgba(250, 112, 154, 0.4);
+            color: #fa709a;
+        }
+
+        @keyframes alertSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Links */
+        .auth-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .auth-link a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: #4facfe;
+        }
+
+        .auth-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--success-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .auth-link a:hover::after {
+            width: 100%;
+        }
+
+        /* Divider */
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .divider span {
+            background: var(--glass-bg);
+            padding: 0 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: var(--danger-gradient); width: 33%; }
+        .strength-medium { background: var(--warning-gradient); width: 66%; }
+        .strength-strong { background: var(--success-gradient); width: 100%; }
+
+        /* Animations */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .brand-section {
+                height: auto;
+                padding: 2rem;
+                min-height: 40vh;
+            }
+
+            .register-section {
+                height: auto;
+                padding: 2rem;
+                min-height: 60vh;
+            }
+
+            .brand-title {
+                font-size: 2rem;
+            }
+
+            .main-logo {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .brand-section, .register-section {
+                padding: 1.5rem;
+            }
+
+            .register-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .benefit-list {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <!-- Left Side - Branding -->
+    <div class="brand-section">
+        <div class="brand-content">
+            <div class="main-logo">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1 class="brand-title">지금 시작하세요</h1>
+            <p class="brand-subtitle">
+                ProductSync와 함께<br>
+                효율적인 상품 관리를 경험해보세요
+            </p>
+
+            <div class="benefit-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <span>빠른 설정과 즉시 사용 가능</span>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <span>엔터프라이즈급 보안</span>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <span>실시간 분석 및 리포트</span>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <span>클라우드 기반 백업</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side - Register Form -->
+    <div class="register-section">
+        <div class="register-container">
+            <div class="register-header">
+                <h2 class="register-title">회원가입</h2>
+                <p class="register-subtitle">새 계정을 만들어 시작하세요</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Register Form -->
+            <form th:action="@{/register}" th:object="${user}" method="post" id="registerForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">이메일 주소</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email"
+                               class="form-input"
+                               id="email"
+                               th:field="*{email}"
+                               placeholder="example@email.com"
+                               required
+                               autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password"
+                               class="form-input"
+                               id="password"
+                               th:field="*{password}"
+                               placeholder="안전한 비밀번호를 입력하세요"
+                               required
+                               autocomplete="new-password">
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="strengthBar"></div>
+                    </div>
+                    <small id="passwordHelp" style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; display: block;">
+                        8자 이상, 대문자, 소문자, 숫자 포함
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-check-circle input-icon"></i>
+                        <input type="password"
+                               class="form-input"
+                               id="confirmPassword"
+                               placeholder="비밀번호를 다시 입력하세요"
+                               required
+                               autocomplete="new-password">
+                    </div>
+                    <small id="confirmHelp" style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; display: none;">
+                    </small>
+                </div>
+
+                <button type="submit" class="btn-register" id="registerBtn">
+                    <span class="btn-text">계정 만들기</span>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>또는</span>
+            </div>
+
+            <!-- Login Link -->
+            <div class="auth-link">
+                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">이미 계정이 있으신가요?</p>
+                <a th:href="@{/login}">
+                    <i class="fas fa-sign-in-alt"></i>
+                    로그인하기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password strength checker
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('strengthBar');
+    const passwordHelp = document.getElementById('passwordHelp');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        const strength = checkPasswordStrength(password);
+
+        strengthBar.className = 'password-strength-bar';
+
+        if (strength >= 3) {
+            strengthBar.classList.add('strength-strong');
+            passwordHelp.textContent = '강력한 비밀번호입니다';
+            passwordHelp.style.color = '#43e97b';
+        } else if (strength >= 2) {
+            strengthBar.classList.add('strength-medium');
+            passwordHelp.textContent = '보통 강도의 비밀번호입니다';
+            passwordHelp.style.color = '#fee140';
+        } else if (strength >= 1) {
+            strengthBar.classList.add('strength-weak');
+            passwordHelp.textContent = '약한 비밀번호입니다';
+            passwordHelp.style.color = '#fa709a';
+        } else {
+            passwordHelp.textContent = '8자 이상, 대문자, 소문자, 숫자 포함';
+            passwordHelp.style.color = 'var(--text-muted)';
+        }
+    });
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        return strength;
+    }
+
+    // Password confirmation
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const confirmHelp = document.getElementById('confirmHelp');
+
+    confirmPasswordInput.addEventListener('input', function() {
+        const password = passwordInput.value;
+        const confirmPassword = this.value;
+
+        if (confirmPassword.length > 0) {
+            confirmHelp.style.display = 'block';
+            if (password === confirmPassword) {
+                confirmHelp.textContent = '비밀번호가 일치합니다';
+                confirmHelp.style.color = '#43e97b';
+                this.style.borderColor = 'rgba(67, 233, 123, 0.6)';
+            } else {
+                confirmHelp.textContent = '비밀번호가 일치하지 않습니다';
+                confirmHelp.style.color = '#fa709a';
+                this.style.borderColor = 'rgba(250, 112, 154, 0.6)';
+            }
+        } else {
+            confirmHelp.style.display = 'none';
+            this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        }
+    });
+
+    // Form submission with validation
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            confirmHelp.textContent = '비밀번호가 일치하지 않습니다';
+            confirmHelp.style.color = '#fa709a';
+            confirmHelp.style.display = 'block';
+            confirmPasswordInput.focus();
+            return;
+        }
+
+        if (checkPasswordStrength(password) < 2) {
+            e.preventDefault();
+            passwordHelp.textContent = '더 강력한 비밀번호를 사용해주세요';
+            passwordHelp.style.color = '#fa709a';
+            passwordInput.focus();
+            return;
+        }
+
+        const btn = document.getElementById('registerBtn');
+        const btnText = btn.querySelector('.btn-text');
+
+        btnText.innerHTML = '<span class="loading"></span> 계정 생성 중...';
+        btn.disabled = true;
+    });
+
+    // Enhanced form validation
+    const inputs = document.querySelectorAll('.form-input');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.id !== 'password' && this.id !== 'confirmPassword') {
+                if (this.validity.valid) {
+                    this.style.borderColor = 'rgba(67, 233, 123, 0.6)';
+                } else {
+                    this.style.borderColor = 'rgba(250, 112, 154, 0.6)';
+                }
+            }
+        });
+
+        input.addEventListener('input', function() {
+            if (this.id !== 'password' && this.id !== 'confirmPassword') {
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            }
+        });
+    });
+
+    // Auto-hide alerts
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            alert.style.animation = 'alertSlide 0.5s ease reverse';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 500);
+        });
+    }, 5000);
+</script>
+</body>
+</html>
