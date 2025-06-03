@@ -558,7 +558,7 @@
                 <span th:text="${error}"></span>
             </div>
 
-            <div th:if="${message}" class="alert alert-success">
+            <div th:if="${message}" class="alert alert-success" id="logoutMessage">
                 <i class="fas fa-check-circle"></i>
                 <span th:text="${message}"></span>
             </div>
@@ -616,6 +616,32 @@
 </div>
 
 <script>
+    // 페이지 로드 시 URL에서 logout 파라미터 제거
+    window.addEventListener('load', function() {
+        const url = new URL(window.location);
+        if (url.searchParams.has('logout')) {
+            // logout 메시지가 있으면 5초 후에 URL에서 파라미터 제거
+            setTimeout(function() {
+                // URL에서 logout 파라미터 제거
+                url.searchParams.delete('logout');
+
+                // 새로운 URL로 히스토리 교체 (페이지 새로고침 없이)
+                window.history.replaceState({}, document.title, url.pathname);
+
+                // 메시지 부드럽게 제거
+                const logoutMessage = document.getElementById('logoutMessage');
+                if (logoutMessage) {
+                    logoutMessage.style.animation = 'alertSlide 0.5s ease reverse';
+                    setTimeout(() => {
+                        if (logoutMessage.parentNode) {
+                            logoutMessage.remove();
+                        }
+                    }, 500);
+                }
+            }, 3000); // 3초 후에 파라미터 제거
+        }
+    });
+
     // Form submission with loading state
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         const btn = document.getElementById('loginBtn');
@@ -647,9 +673,9 @@
         });
     });
 
-    // Auto-hide alerts
+    // Auto-hide alerts (except logout message which is handled above)
     setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
+        const alerts = document.querySelectorAll('.alert:not(#logoutMessage)');
         alerts.forEach(alert => {
             alert.style.animation = 'alertSlide 0.5s ease reverse';
             setTimeout(() => {
