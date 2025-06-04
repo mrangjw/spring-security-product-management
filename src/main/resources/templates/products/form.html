@@ -484,6 +484,11 @@
             z-index: 2;
         }
 
+        /* Price input specific - 가격 입력 필드의 패딩을 증가시켜 ₩ 기호와 겹치지 않도록 수정 */
+        .price-input {
+            padding-left: 5.5rem !important; /* ₩ 기호 공간 확보 */
+        }
+
     </style>
 </head>
 <body>
@@ -593,7 +598,7 @@
                            th:field="*{price}"
                            step="0.01"
                            min="0"
-                           placeholder="0"
+                           placeholder="가격을 입력하세요"
                            required>
                 </div>
                 <div th:if="${#fields.hasErrors('price')}" class="error-message">
